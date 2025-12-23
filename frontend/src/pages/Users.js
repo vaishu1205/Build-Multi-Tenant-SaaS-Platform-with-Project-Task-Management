@@ -20,7 +20,7 @@ export default function Users() {
   return (
     <>
       <Navbar />
-      <div style={{ padding: 32 }}>
+      <div className="page" style={{ padding: 32 }}>
         <h2>Users</h2>
 
         <table width="100%" style={{ marginTop: 24 }}>
