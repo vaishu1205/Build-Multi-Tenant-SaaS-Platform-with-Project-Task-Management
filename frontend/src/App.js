@@ -1,10 +1,10 @@
-import './styles/theme.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import ProtectedRoute from './auth/ProtectedRoute';
-import Projects from './pages/Projects';
-
+import "./styles/theme.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import Projects from "./pages/Projects";
+import ProjectDetails from "./pages/ProjectDetails";
 
 export default function App() {
   return (
@@ -20,13 +20,21 @@ export default function App() {
           }
         />
         <Route
-  path="/projects"
-  element={
-    <ProtectedRoute>
-      <Projects />
-    </ProtectedRoute>
-  }
-/>
+          path="/projects"
+          element={
+            <ProtectedRoute>
+              <Projects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<Login />} />
       </Routes>
