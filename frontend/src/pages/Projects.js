@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import ProtectedRoute from "../auth/ProtectedRoute";
+import Navbar from "../components/Navbar";
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -15,7 +15,8 @@ export default function Projects() {
   if (loading) return null;
 
   return (
-    <ProtectedRoute>
+    <>
+      <Navbar />
       <div style={{ padding: 32 }}>
         <h2>Projects</h2>
 
@@ -62,6 +63,6 @@ export default function Projects() {
           ))}
         </div>
       </div>
-    </ProtectedRoute>
+    </>
   );
 }
