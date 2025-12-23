@@ -3,6 +3,7 @@ import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import tenantRoutes from './routes/tenant.routes.js';
 import userRoutes from './routes/user.routes.js';
+import projectRoutes from './routes/project.routes.js';
 
 
 const app = express();
@@ -13,6 +14,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api', userRoutes);
+app.use('/api', projectRoutes);
+
 
 
 
