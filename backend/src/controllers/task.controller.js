@@ -1,9 +1,15 @@
-import { v4 as uuid } from 'uuid';
-import pool from '../config/db.js';
+import { v4 as uuid } from "uuid";
+import pool from "../config/db.js";
 
 export const createTask = async (req, res) => {
   const { projectId } = req.params;
-  const { title, description, assignedTo, priority = 'medium', dueDate } = req.body;
+  const {
+    title,
+    description,
+    assignedTo,
+    priority = "medium",
+    dueDate,
+  } = req.body;
 
   const project = await pool.query(
     `SELECT tenant_id FROM projects WHERE id=$1`,
@@ -11,7 +17,7 @@ export const createTask = async (req, res) => {
   );
 
   if (!project.rows.length || project.rows[0].tenant_id !== req.user.tenantId) {
-    return res.status(403).json({ success: false, message: 'Forbidden' });
+    return res.status(403).json({ success: false, message: "Forbidden" });
   }
 
   if (assignedTo) {
@@ -20,7 +26,9 @@ export const createTask = async (req, res) => {
       [assignedTo, req.user.tenantId]
     );
     if (!user.rows.length) {
-      return res.status(400).json({ success: false, message: 'Invalid assignee' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid assignee" });
     }
   }
 
@@ -38,13 +46,13 @@ export const createTask = async (req, res) => {
       description,
       priority,
       assignedTo || null,
-      dueDate || null
+      dueDate || null,
     ]
   );
 
   res.status(201).json({
     success: true,
-    data: { id: taskId, title, priority }
+    data: { id: taskId, title, priority },
   });
 };
 
@@ -66,6 +74,25 @@ export const listTasks = async (req, res) => {
   res.json({ success: true, data: { tasks: tasks.rows } });
 };
 
+export const listMyTasks = async (req, res) => {
+  const tasks = await pool.query(
+    `
+    SELECT t.id, t.title, t.status, t.priority, t.due_date,
+           p.name AS project_name
+    FROM tasks t
+    JOIN projects p ON t.project_id = p.id
+    WHERE t.assigned_to = $1
+    ORDER BY t.due_date ASC
+    `,
+    [req.user.userId]
+  );
+
+  res.json({
+    success: true,
+    data: { tasks: tasks.rows },
+  });
+};
+
 export const updateTaskStatus = async (req, res) => {
   const { taskId } = req.params;
   const { status } = req.body;
@@ -76,12 +103,13 @@ export const updateTaskStatus = async (req, res) => {
     [status, taskId, req.user.tenantId]
   );
 
-  res.json({ success: true, message: 'Task status updated' });
+  res.json({ success: true, message: "Task status updated" });
 };
 
 export const updateTask = async (req, res) => {
   const { taskId } = req.params;
-  const { title, description, status, priority, assignedTo, dueDate } = req.body;
+  const { title, description, status, priority, assignedTo, dueDate } =
+    req.body;
 
   if (assignedTo) {
     const user = await pool.query(
@@ -89,7 +117,9 @@ export const updateTask = async (req, res) => {
       [assignedTo, req.user.tenantId]
     );
     if (!user.rows.length) {
-      return res.status(400).json({ success: false, message: 'Invalid assignee' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid assignee" });
     }
   }
 
@@ -111,20 +141,20 @@ export const updateTask = async (req, res) => {
       assignedTo || null,
       dueDate || null,
       taskId,
-      req.user.tenantId
+      req.user.tenantId,
     ]
   );
 
-  res.json({ success: true, message: 'Task updated successfully' });
+  res.json({ success: true, message: "Task updated successfully" });
 };
 
 export const deleteTask = async (req, res) => {
   const { taskId } = req.params;
 
-  await pool.query(
-    `DELETE FROM tasks WHERE id=$1 AND tenant_id=$2`,
-    [taskId, req.user.tenantId]
-  );
+  await pool.query(`DELETE FROM tasks WHERE id=$1 AND tenant_id=$2`, [
+    taskId,
+    req.user.tenantId,
+  ]);
 
-  res.json({ success: true, message: 'Task deleted successfully' });
+  res.json({ success: true, message: "Task deleted successfully" });
 };

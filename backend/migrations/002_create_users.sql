@@ -1,8 +1,13 @@
 BEGIN;
 
-CREATE TYPE user_role AS ENUM ('super_admin', 'tenant_admin', 'user');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+    CREATE TYPE user_role AS ENUM ('super_admin', 'tenant_admin', 'user');
+  END IF;
+END $$;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY,
   tenant_id UUID NULL,
   email VARCHAR(255) NOT NULL,
@@ -20,6 +25,33 @@ CREATE TABLE users (
     UNIQUE (tenant_id, email)
 );
 
-CREATE INDEX idx_users_tenant_id ON users(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_users_tenant_id ON users(tenant_id);
 
 COMMIT;
+
+
+-- BEGIN;
+
+-- CREATE TYPE user_role AS ENUM ('super_admin', 'tenant_admin', 'user');
+
+-- CREATE TABLE users (
+--   id UUID PRIMARY KEY,
+--   tenant_id UUID NULL,
+--   email VARCHAR(255) NOT NULL,
+--   password_hash VARCHAR(255) NOT NULL,
+--   full_name VARCHAR(255) NOT NULL,
+--   role user_role NOT NULL,
+--   is_active BOOLEAN NOT NULL DEFAULT true,
+--   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+--   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+--   CONSTRAINT fk_users_tenant
+--     FOREIGN KEY (tenant_id)
+--     REFERENCES tenants(id)
+--     ON DELETE CASCADE,
+--   CONSTRAINT unique_tenant_email
+--     UNIQUE (tenant_id, email)
+-- );
+
+-- CREATE INDEX idx_users_tenant_id ON users(tenant_id);
+
+-- COMMIT;
