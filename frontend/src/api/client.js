@@ -1,34 +1,24 @@
-// const API_URL = process.env.REACT_APP_API_URL;
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-// export const api = async (path, options = {}) => {
-//   const token = localStorage.getItem('token');
-
-//   const res = await fetch(`${API_URL}${path}`, {
-//     ...options,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       ...(token ? { Authorization: `Bearer ${token}` } : {})
-//     }
-//   });
-
-//   const data = await res.json();
-//   if (!res.ok) throw data;
-//   return data;
-// };
-const API_URL = "http://localhost:5000";
-
-export const api = async (path, options = {}) => {
+export async function api(path, options = {}) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${API_URL}${path}`, {
-    ...options,
+  
+  const fullPath = path.startsWith("/api") ? path : `/api${path}`;
+
+  const res = await fetch(`${API_BASE}${fullPath}`, {
+    method: options.method || "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token && { Authorization: `Bearer ${token}` }),
     },
+    body: options.body,
   });
 
-  const data = await res.json();
-  if (!res.ok) throw data;
-  return data;
-};
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Request failed");
+  }
+
+  return res.json();
+}

@@ -7,20 +7,26 @@ import seed from "./seeds/seed.js";
 const PORT = process.env.PORT || 5000;
 
 const start = async () => {
-  await pool.query("SELECT 1");
-  if (process.env.NODE_ENV !== "production") {
-    await runMigrations();
-    await seed();
-  }
-  app.listen(PORT);
-};
+  try {
+    console.log(" Connecting to database...");
+    await pool.query("SELECT 1");
+    console.log(" Database connected");
 
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "UP",
-    service: "backend",
-    timestamp: new Date().toISOString(),
-  });
-});
+    if (process.env.NODE_ENV !== "production") {
+      console.log(" Running migrations...");
+      await runMigrations();
+
+      console.log(" Running seeds...");
+      await seed();
+    }
+
+    app.listen(PORT, () => {
+      console.log(` Backend running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error(" Server startup failed:", err);
+    process.exit(1);
+  }
+};
 
 start();

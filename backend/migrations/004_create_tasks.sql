@@ -1,7 +1,18 @@
 BEGIN;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
+    CREATE TYPE task_status AS ENUM ('todo', 'in_progress', 'completed');
+  END IF;
+END $$;
 
-CREATE TYPE task_status AS ENUM ('todo', 'in_progress', 'completed');
-CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_priority') THEN
+    CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high');
+  END IF;
+END $$;
+
 
 CREATE TABLE tasks (
   id UUID PRIMARY KEY,

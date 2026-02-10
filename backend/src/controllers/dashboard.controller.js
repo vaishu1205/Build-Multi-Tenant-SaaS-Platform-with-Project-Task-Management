@@ -4,7 +4,7 @@ export const getDashboardStats = async (req, res) => {
   const tenantId = req.user.tenantId;
   const userId = req.user.userId;
 
-  // Tenant-wide stats
+
   const stats = await pool.query(
     `
     SELECT
@@ -15,7 +15,7 @@ export const getDashboardStats = async (req, res) => {
     [tenantId]
   );
 
-  // My tasks
+
   const myTasks = await pool.query(
     `
     SELECT t.id,t.title,t.status,t.priority,p.name AS project_name
