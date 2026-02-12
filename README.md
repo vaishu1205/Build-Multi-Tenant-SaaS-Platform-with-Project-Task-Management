@@ -237,11 +237,4 @@ frontend/
 └── package.json
 
 
-✅ Status
-
-✔ Backend APIs implemented
-✔ Frontend UI implemented
-✔ Dockerized & deployable
-✔ Meets evaluation checklist
-=======
 
